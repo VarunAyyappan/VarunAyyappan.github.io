@@ -109,10 +109,10 @@ export interface EmailLink {
 }
 
 export const siteConfig: SiteConfig = {
-  name: "Ada Lovelace",
-  tagline: "Analyst, metaphysician and founder of scientific computing.",
+  name: "Varun Ayyappan",
+  tagline: "Software engineer with a BS and MS in Computer Science.",
   intro:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    "I studied computer science at the University of Maryland and Arizona State University, with a focus on machine learning and, most recently, agentic AI: building the harnesses that turn LLMs into agents. I'm looking for new grad roles in software engineering, machine learning engineering and AI engineering. I'm based in San Jose and open to relocating.",
   url: "https://varunayyappan.github.io",
   base: "/",
   // Each Section's path is in src/lib/sections.ts, e.g. sectionPaths.blog is
@@ -156,15 +156,29 @@ export const siteConfig: SiteConfig = {
   skills: [
     {
       heading: "Languages",
-      skills: ["English", "French", "Italian", "Note G"],
+      skills: ["Python", "Java", "C", "JavaScript", "SQL", "R"],
     },
     {
-      heading: "Mathematics",
-      skills: ["Bernoulli numbers", "Calculus", "Probability"],
+      heading: "Machine learning",
+      skills: [
+        "PyTorch",
+        "TensorFlow",
+        "Keras",
+        "scikit-learn",
+        "Hugging Face Transformers",
+        "OpenCV",
+      ],
     },
     {
-      heading: "Machines",
-      skills: ["Analytical Engine", "Difference Engine", "Jacquard loom"],
+      heading: "Data",
+      skills: [
+        "NumPy",
+        "pandas",
+        "SciPy",
+        "Matplotlib",
+        "Jupyter",
+        "Apache Spark",
+      ],
     },
   ],
 };
