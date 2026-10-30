@@ -1,0 +1,94 @@
+---
+/**
+ * The one list of Posts, used by Home's Latest Posts, the Blog index and
+ * Tag pages. Each Post's date has a column of its own, the first 2 of the
+ * list's 8, so a Visitor can scan down the dates; the title, description
+ * and Tags fill the other 6, and the date lines up with the title's first
+ * line. The columns share the page grid's gap, so a list in the page grid's
+ * right 8 columns lines up with them. Below 60em, the date sits above the
+ * title.
+ */
+import { type Post, postPath } from "../lib/posts";
+import { withBase } from "../lib/url";
+import PostMeta from "./PostMeta.astro";
+import Tags from "./Tags.astro";
+
+interface Props {
+  posts: Post[];
+  /** The heading level of each Post's title, so the list fits the page outline. */
+  headingLevel?: 2 | 3;
+}
+
+const { posts, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as const;
+---
+
+<ul class="post-list">
+  {
+    posts.map((post) => (
+      <li>
+        <article>
+          <PostMeta post={post} class="date" />
+          <div class="summary">
+            <Heading class="item-title">
+              <a href={withBase(postPath(post))}>{post.data.title}</a>
+            </Heading>
+            <p class="description">{post.data.description}</p>
+            <Tags tags={post.data.tags} />
+          </div>
+        </article>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .post-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li + li {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: var(--rule-thin);
+  }
+
+  .date {
+    margin-bottom: 0.25rem;
+  }
+
+  .summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  @media (width >= 60em) {
+    article {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+      align-items: baseline;
+    }
+
+    .date {
+      grid-column: 1 / span 2;
+      margin-bottom: 0;
+    }
+
+    .summary {
+      grid-column: 3 / -1;
+    }
+  }
+
+  .item-title a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+
+  .description {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+</style>

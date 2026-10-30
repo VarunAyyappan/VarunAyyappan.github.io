@@ -1,0 +1,74 @@
+---
+import { Font } from "astro:assets";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SeoHead, {
+  type Props as SeoHeadProps,
+} from "../components/SeoHead.astro";
+import { colorModeSettings, colorModeStorageKey } from "../lib/color-mode";
+import { feedPath } from "../lib/posts";
+import { withBase } from "../lib/url";
+import { siteConfig } from "../site.config";
+import "../styles/global.css";
+
+/** The page's title, description and share image (see SeoHead). */
+type Props = SeoHeadProps;
+
+// The settings that are saved; system is the absence of one.
+const savedColorModes = colorModeSettings.filter((mode) => mode !== "system");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline define:vars={{ colorModeStorageKey, savedColorModes }}>
+      // Applies a saved Color mode setting before first paint, so the wrong
+      // mode never flashes. Blocking and inline on purpose. Any storage
+      // error, or a value that isn't a setting, leaves the system setting.
+      try {
+        const setting = localStorage.getItem(colorModeStorageKey);
+        if (savedColorModes.includes(setting)) {
+          document.documentElement.dataset.colorMode = setting;
+        }
+      } catch {}
+    </script>
+    <SeoHead {...Astro.props} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={siteConfig.name}
+      href={withBase(feedPath)}
+    />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    background-color: var(--color-surface);
+    font-weight: 600;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

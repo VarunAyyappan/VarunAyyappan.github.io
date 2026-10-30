@@ -1,0 +1,44 @@
+---
+import PageGrid from "../components/PageGrid.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { base } from "../lib/url";
+---
+
+<BaseLayout title="Page not found">
+  <PageGrid as="section" class="not-found" aria-labelledby="not-found-heading">
+    <p class="status">404</p>
+    <h1 class="page-heading" id="not-found-heading">Page not found</h1>
+    <p>There's nothing at this address. It may have moved, or never existed.</p>
+    <a href={base}>Back to Home</a>
+  </PageGrid>
+</BaseLayout>
+
+<style>
+  /* With nothing to put beside it, the heading spans the full width of
+     the page grid, set larger to fill it. */
+  .not-found {
+    padding-block: var(--space-landing);
+  }
+
+  .status {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+  }
+
+  .page-heading {
+    margin-top: 0.25rem;
+    font-size: clamp(3.5rem, 10vw, 7rem);
+  }
+
+  p:not(.status) {
+    margin: 1rem 0 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+  }
+
+  a {
+    font-weight: 600;
+  }
+</style>

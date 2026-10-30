@@ -1,0 +1,63 @@
+---
+import { render } from "astro:content";
+import DetailPage from "../../components/DetailPage.astro";
+import ProjectMeta from "../../components/ProjectMeta.astro";
+import Stack from "../../components/Stack.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProjects, type Project } from "../../lib/projects";
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { title, summary, stack, repository, live, cover } = project.data;
+const { Content } = await render(project);
+const links = [
+  { label: "Repository", href: repository },
+  { label: "Live site", href: live },
+].filter((link) => link.href);
+---
+
+<BaseLayout {title} description={summary} image={cover}>
+  <DetailPage {title} titleId="project-title" {summary} {cover}>
+    <Fragment slot="details">
+      <ProjectMeta project={project} />
+      {
+        stack.length > 0 && (
+          <div>
+            <h2 class="label-text">Stack</h2>
+            <Stack items={stack} onePerLine />
+          </div>
+        )
+      }
+    </Fragment>
+    {
+      links.length > 0 && (
+        <ul slot="links">
+          {links.map(({ label, href }) => (
+            <li>
+              <a href={href}>{label}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    <Content />
+  </DetailPage>
+</BaseLayout>
+
+<style>
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 0.9375rem;
+  }
+</style>

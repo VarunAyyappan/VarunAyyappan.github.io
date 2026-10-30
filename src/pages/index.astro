@@ -1,0 +1,168 @@
+---
+/**
+ * Home leads with the Adopter's work, on the page grid: the hero (their
+ * name, tagline, intro, Availability and a link to Contact) holds the left
+ * 4 columns, staying in view while the featured Projects beside it scroll
+ * past. Below, the Latest Posts and Skills each hang their heading in the
+ * left column, with the content on the right, under a thick rule. Each part
+ * is left out when it has nothing to show. On a phone, it all stacks in
+ * reading order.
+ */
+import Availability from "../components/Availability.astro";
+import PageGrid from "../components/PageGrid.astro";
+import PostList from "../components/PostList.astro";
+import ProjectTiles from "../components/ProjectTiles.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getLatestPosts } from "../lib/posts";
+import { getFeaturedProjects } from "../lib/projects";
+import { sectionPaths } from "../lib/sections";
+import { withBase } from "../lib/url";
+import { siteConfig } from "../site.config";
+
+const featuredProjects = await getFeaturedProjects();
+const latestPosts = await getLatestPosts();
+---
+
+<BaseLayout>
+  <PageGrid>
+    <section slot="heading" class="hero" aria-labelledby="hero-name">
+      <h1 class="page-heading" id="hero-name">{siteConfig.name}</h1>
+      <p class="tagline">{siteConfig.tagline}</p>
+      <p class="intro">{siteConfig.intro}</p>
+      <Availability />
+      <p class="actions">
+        <a class="button" href={withBase(sectionPaths.contact)}>Get in touch</a>
+      </p>
+    </section>
+    {
+      featuredProjects.length > 0 && (
+        <section aria-labelledby="featured-heading">
+          {/* The tiles beside the hero say what they are, so the heading
+              is there only for assistive technology. */}
+          <h2 class="visually-hidden" id="featured-heading">
+            Featured Projects
+          </h2>
+          <ProjectTiles projects={featuredProjects} headingLevel={3} />
+          <a class="all" href={withBase(sectionPaths.projects)}>
+            All Projects
+          </a>
+        </section>
+      )
+    }
+  </PageGrid>
+  {
+    latestPosts.length > 0 && (
+      <PageGrid as="section" class="part" aria-labelledby="latest-heading">
+        <h2 slot="heading" class="section-heading" id="latest-heading">
+          Latest Posts
+        </h2>
+        <PostList posts={latestPosts} headingLevel={3} />
+        <a class="all" href={withBase(sectionPaths.blog)}>
+          All Posts
+        </a>
+      </PageGrid>
+    )
+  }
+  {
+    siteConfig.skills.length > 0 && (
+      <PageGrid as="section" class="part" aria-labelledby="skills-heading">
+        <h2 slot="heading" class="section-heading" id="skills-heading">
+          Skills
+        </h2>
+        <div class="skill-groups">
+          {siteConfig.skills.map(({ heading, skills }) => (
+            <div>
+              <h3 class="label-text">{heading}</h3>
+              <ul>
+                {skills.map((skill) => (
+                  <li>{skill}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </PageGrid>
+    )
+  }
+</BaseLayout>
+
+<style>
+  /* Each part of Home after the hero's row starts under a thick rule. */
+  .part {
+    border-top: var(--rule-thick);
+  }
+
+  .section-heading {
+    margin: 0;
+  }
+
+  .tagline {
+    margin: 1.5rem 0 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .intro {
+    margin: 1rem 0 0;
+    color: var(--color-text-muted);
+  }
+
+  .actions {
+    margin: 1.75rem 0 0;
+  }
+
+  /* Text and background colors swapped, which keeps the link at AA
+     contrast in both Color modes. */
+  .button {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--color-text);
+    color: var(--color-background);
+    font-weight: 700;
+    text-decoration-line: none;
+  }
+
+  .button:hover {
+    background-color: var(--color-text-muted);
+  }
+
+  /* Named for assistive technology, but not shown. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* A list's closing link starts where the list starts. */
+  .all {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-weight: 700;
+  }
+
+  .skill-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1.5rem var(--grid-gap);
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+  }
+
+  /* Skills are plain text, one per line, not chips. */
+  .skill-groups ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .skill-groups li {
+    padding-block: 0.125rem;
+    color: var(--color-text-muted);
+  }
+</style>

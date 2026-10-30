@@ -1,0 +1,75 @@
+---
+import { feedPath } from "../lib/posts";
+import { socialLinks } from "../lib/social";
+import { withBase } from "../lib/url";
+import { siteConfig } from "../site.config";
+import RssIcon from "./icons/Rss.astro";
+---
+
+<footer class="site-footer">
+  <p>&copy; {new Date().getFullYear()} {siteConfig.name}</p>
+  <ul class="social" aria-label="Elsewhere">
+    {
+      socialLinks.map(({ label, href, Icon }) => (
+        <li>
+          <a href={href} aria-label={label} rel="me">
+            <Icon />
+          </a>
+        </li>
+      ))
+    }
+    <li>
+      <a href={withBase(feedPath)} aria-label="RSS feed">
+        <RssIcon />
+      </a>
+    </li>
+  </ul>
+</footer>
+
+<style>
+  /* The copyright on the left and the social links on the right, which
+     wrap below it when the row is too narrow for both. As wide as the page
+     grid, so its rule starts and ends where the content does. */
+  .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    width: min(
+      100% - 2 * var(--grid-gutter),
+      var(--grid-width) - 2 * var(--grid-gutter)
+    );
+    margin: 0 auto;
+    padding: 2rem 0;
+    border-top: var(--rule-thick);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* The negative margin lines the icons, rather than their padded hit
+     areas, up with the footer's edges. */
+  .social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 -0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .social a {
+    display: flex;
+    padding: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
+  }
+
+  .social a:hover {
+    color: var(--color-text);
+  }
+
+  p {
+    margin: 0;
+  }
+</style>

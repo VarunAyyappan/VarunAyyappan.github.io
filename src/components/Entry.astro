@@ -1,0 +1,55 @@
+---
+import { formatMonth } from "../lib/date";
+import MetaLine from "./MetaLine.astro";
+
+/** The line under an entry's subtitle: its dates and location. */
+interface EntryMeta {
+  start: Date;
+  /** Leave out for an entry that is still ongoing. */
+  end?: Date;
+  location?: string;
+}
+
+interface Props {
+  /** The role, or the qualification. */
+  title: string;
+  /** Who the entry was with: the organization, or the institution. */
+  subtitle: string;
+  meta: EntryMeta;
+}
+
+const { title, subtitle, meta } = Astro.props;
+const { start, end, location } = meta;
+---
+
+<article class="entry">
+  <h3 class="item-title">{title}</h3>
+  <p class="subtitle">{subtitle}</p>
+  <MetaLine class="entry-meta">
+    <span>
+      <time datetime={start.toISOString()}>{formatMonth(start)}</time>
+      –
+      {end ? <time datetime={end.toISOString()}>{formatMonth(end)}</time> : "Present"}
+    </span>
+    {location && <span>{location}</span>}
+  </MetaLine>
+  <slot />
+</article>
+
+<style>
+  .entry {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .entry-meta {
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+  }
+</style>

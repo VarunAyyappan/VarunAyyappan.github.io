@@ -1,0 +1,28 @@
+---
+import PageGrid from "../../../components/PageGrid.astro";
+import PostList from "../../../components/PostList.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getTags, type Tag } from "../../../lib/posts";
+
+export async function getStaticPaths() {
+  const tags = await getTags();
+  return tags.map((tag) => ({
+    params: { tag: tag.slug },
+    props: { tag },
+  }));
+}
+
+interface Props {
+  tag: Tag;
+}
+
+const { tag } = Astro.props;
+const heading = `Posts tagged ${tag.name}`;
+---
+
+<BaseLayout title={heading}>
+  <PageGrid as="section" aria-labelledby="tag-heading">
+    <h1 class="page-heading" id="tag-heading" slot="heading">{heading}</h1>
+    <PostList posts={tag.posts} />
+  </PageGrid>
+</BaseLayout>

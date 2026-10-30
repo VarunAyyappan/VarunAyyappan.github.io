@@ -1,0 +1,37 @@
+---
+import { formatDay } from "../lib/date";
+import { type Post, readingMinutes } from "../lib/posts";
+import MetaDate from "./MetaDate.astro";
+import MetaLine from "./MetaLine.astro";
+
+interface Props {
+  post: Post;
+  /** Overrides the line's layout from the component that uses it. */
+  class?: string;
+  /** Also shows the updated date and reading time, as the Post page does. */
+  detailed?: boolean;
+}
+
+const { post, detailed = false, class: className, ...attributes } = Astro.props;
+const { date, updated, draft } = post.data;
+---
+
+<MetaLine class:list={[className, { detailed }]} {...attributes}>
+  <MetaDate date={date} text={formatDay(date)} draft={draft} />
+  {
+    detailed && updated && (
+      <span>
+        Updated{" "}
+        <time datetime={updated.toISOString()}>{formatDay(updated)}</time>
+      </span>
+    )
+  }
+  {detailed && <span>{readingMinutes(post)} min read</span>}
+</MetaLine>
+
+<style>
+  .detailed {
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+  }
+</style>

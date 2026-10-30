@@ -1,0 +1,50 @@
+---
+import { Image } from "astro:assets";
+import { getEntry, render } from "astro:content";
+import PageGrid from "../components/PageGrid.astro";
+import Prose from "../components/Prose.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+
+const about = await getEntry("about", "about");
+if (!about) {
+  throw new Error("The About Section needs src/content/about/about.md");
+}
+const { portrait, portraitAlt = `Portrait of ${siteConfig.name}` } =
+  about.data;
+const { Content } = await render(about);
+---
+
+<BaseLayout title="About">
+  <PageGrid as="article" aria-labelledby="about-heading">
+    <Fragment slot="heading">
+      {
+        portrait && (
+          <Image
+            src={portrait}
+            alt={portraitAlt}
+            widths={[160, 320]}
+            sizes="10rem"
+            loading="eager"
+          />
+        )
+      }
+      <h1 class="page-heading" id="about-heading">About</h1>
+    </Fragment>
+    <Prose>
+      <Content />
+    </Prose>
+  </PageGrid>
+</BaseLayout>
+
+<style>
+  /* The portrait sits above the heading. */
+  img {
+    display: block;
+    width: 10rem;
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+</style>

@@ -1,0 +1,191 @@
+---
+import { getEntry, render } from "astro:content";
+import Availability from "../components/Availability.astro";
+import PageGrid from "../components/PageGrid.astro";
+import Prose from "../components/Prose.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { emailLink, networkLinks } from "../lib/social";
+import { withBase } from "../lib/url";
+
+const contact = await getEntry("contact", "contact");
+if (!contact) {
+  throw new Error("The Contact Section needs src/content/contact/contact.md");
+}
+const { openTo, responseTime, timezone, pgpFingerprint, pgpKey } =
+  contact.data;
+const { Content } = await render(contact);
+
+// "Open to" reads as one sentence: "Freelance work, speaking, and mentoring."
+const openToSentence = `${new Intl.ListFormat("en").format(openTo)}.`;
+---
+
+<BaseLayout title="Contact">
+  <PageGrid>
+    <h1 class="page-heading" slot="heading">Contact</h1>
+    <Availability />
+    <div class="intro">
+      <Prose>
+        <Content />
+      </Prose>
+    </div>
+    {
+      emailLink && (
+        <a class="email" href={emailLink.href}>
+          <emailLink.Icon />
+          {emailLink.address}
+        </a>
+      )
+    }
+    {
+      (responseTime || timezone) && (
+        <dl class="details">
+          {responseTime && (
+            <div>
+              <dt class="label-text">Response time</dt>
+              <dd>{responseTime}</dd>
+            </div>
+          )}
+          {timezone && (
+            <div>
+              <dt class="label-text">Timezone</dt>
+              <dd>{timezone}</dd>
+            </div>
+          )}
+        </dl>
+      )
+    }
+    {
+      openTo.length > 0 && (
+        <section aria-labelledby="open-to-heading">
+          <h2 class="section-heading" id="open-to-heading">Open to</h2>
+          <p class="open-to">{openToSentence}</p>
+        </section>
+      )
+    }
+    {
+      networkLinks.length > 0 && (
+        <section aria-labelledby="elsewhere-heading">
+          <h2 class="section-heading" id="elsewhere-heading">Elsewhere</h2>
+          <ul class="networks">
+            {networkLinks.map(({ label, href, handle, Icon }) => (
+              <li>
+                <a href={href} rel="me">
+                  <Icon />
+                  <span>
+                    {label}
+                    {handle && <span class="handle">{handle}</span>}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+    {
+      (pgpFingerprint || pgpKey) && (
+        <section aria-labelledby="pgp-heading">
+          <h2 class="section-heading" id="pgp-heading">PGP key</h2>
+          {pgpFingerprint && (
+            <p class="fingerprint">
+              Fingerprint: <code>{pgpFingerprint}</code>
+            </p>
+          )}
+          {pgpKey && (
+            <a class="key" href={withBase(pgpKey)}>
+              Download the public key
+            </a>
+          )}
+        </section>
+      )
+    }
+  </PageGrid>
+</BaseLayout>
+
+<style>
+  .intro {
+    margin-top: 1.5rem;
+  }
+
+  .email {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .email :global(svg) {
+    flex: none;
+    color: var(--color-accent);
+  }
+
+  .details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+    margin: 2rem 0 0;
+  }
+
+  dd {
+    margin: 0.25rem 0 0;
+  }
+
+  .open-to {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  /* The social links as a plain list, divided by thin rules. */
+  .networks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .networks li + li {
+    border-top: var(--rule-thin);
+  }
+
+  .networks a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 0;
+    font-weight: 600;
+    text-decoration-color: transparent;
+  }
+
+  .networks a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+
+  .handle {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  .fingerprint {
+    margin: 0;
+  }
+
+  .fingerprint code {
+    overflow-wrap: anywhere;
+  }
+
+  .key {
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+
+  .networks :global(svg) {
+    flex: none;
+    font-size: 1.25rem;
+  }
+</style>

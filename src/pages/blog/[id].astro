@@ -1,0 +1,32 @@
+---
+import { render } from "astro:content";
+import DetailPage from "../../components/DetailPage.astro";
+import PostMeta from "../../components/PostMeta.astro";
+import Tags from "../../components/Tags.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPosts, type Post, postShareImage } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, description, tags, cover } = post.data;
+const { Content } = await render(post);
+---
+
+<BaseLayout {title} {description} image={postShareImage(post)} type="article">
+  <DetailPage {title} titleId="post-title" summary={description} {cover}>
+    <PostMeta slot="details" post={post} detailed />
+    {tags.length > 0 && <Tags slot="links" tags={tags} />}
+    <Content />
+  </DetailPage>
+</BaseLayout>

@@ -1,0 +1,41 @@
+---
+interface Props {
+  /** The technologies a Project or Experience entry was built with. */
+  items: string[];
+  /** Lists one item per line, as a Project's page does, instead of inline. */
+  onePerLine?: boolean;
+}
+
+const { items, onePerLine = false } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <ul class:list={["stack", { "one-per-line": onePerLine }]} aria-label="Stack">
+      {items.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  /* Plain text, never pills: a Visitor can't click a Stack item, so it
+     shouldn't look like something to click. The items run inline,
+     separated by commas, unless they go one per line. */
+  .stack {
+    margin: 0;
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    list-style: none;
+  }
+
+  .stack:not(.one-per-line) li {
+    display: inline;
+  }
+
+  .stack:not(.one-per-line) li + li::before {
+    content: ", ";
+  }
+</style>
